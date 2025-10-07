@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Knit Pattern - Canvas -> Steps</title>
+        <link rel="stylesheet" href="https://unpkg.com/neobrutalismcss@latest" />
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <main>
+            <h1>Patternizer -- Knitting Pattern Generator</h1>
+
+            <div class="controls">
+                <label class="control-row">
+                    Text:
+                    <input id="wordInput" type="text" placeholder="Enter a word or short phrase" value="HELLO" />
+                </label>
+                <label class="control-row">
+                    Width (stitches):
+                    <select id="widthPreset">
+                        <option value="">— none —</option>
+                        <option value="small">Small (20)</option>
+                        <option value="medium" selected>Medium (30)</option>
+                        <option value="large">Large (40)</option>
+                        <option value="xlarge">X-Large (50)</option>
+                    </select>
+                </label>
+
+                <label class="control-row">
+                    Height (rows):
+                    <select id="heightPreset">
+                        <option value="">— none —</option>
+                        <option value="small">Small (10)</option>
+                        <option value="medium" selected>Medium (15)</option>
+                        <option value="large">Large (20)</option>
+                        <option value="xlarge">X-Large (25)</option>
+                    </select>
+                </label>
+
+                <label class="control-row small">
+                    <input id="invertToggle" type="checkbox" />
+                    Invert (Letters = Knit)
+                </label>
+
+                <label class="control-row small">
+                    <input id="alternateRows" type="checkbox" checked />
+                    Show working order (zig-zag)
+                </label>
+
+                <button id="generateBtn">Generate Pattern</button>
+            </div>
+
+            <div id="warning" class="warning" role="status" aria-live="polite" style="display:none"></div>
+
+
+            <section class="output">
+                <h2>Instructions</h2>
+                <ol id="instructions"></ol>
+                <h2>Compact stitch chart (K = knit, P = Purl)</h2>
+                <pre id="pattern" aria-live="polite"></pre>
+
+                <div id="notes" class="notes"></div>
+            </section>
+        </main>
+        <canvas id="hiddenCanvas" style="display:none"></canvas>
+        <script src="script.js"></script>
+    </body>
+
+</html>

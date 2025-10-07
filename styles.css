@@ -1,0 +1,112 @@
+:root {
+    --accent: #2b7cff;
+    --muted: #666;
+    --bg: #fff;
+    --gap: 10px;
+}
+
+* {
+    box-sizing: border-box
+}
+
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    padding: 20px;
+    color: #111;
+    background: var(--bg);
+}
+
+main {
+    max-width: 920px;
+    margin: 0 auto
+}
+
+h1 {
+    font-size: 1.25rem;
+    margin-bottom: 12px
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap);
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.control-row {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.95rem;
+    min-width: 140px
+}
+
+.control-row.small {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px
+}
+
+.controls input[type="text"] {
+    padding: 7px 8px;
+    min-width: 220px
+}
+
+.controls select {
+    padding: 6px 8px
+}
+
+.controls button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer
+}
+
+.controls button:hover {
+    opacity: 0.95
+}
+
+.warning {
+    background: #fff4e5;
+    border: 1px solid #ffd59e;
+    color: #663b00;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.output h2 {
+    margin-top: 18px;
+    margin-bottom: 8px;
+    font-size: 1.02rem
+}
+
+#pattern {
+    background: #f7f7f7;
+    padding: 12px;
+    border-radius: 6px;
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    overflow: auto;
+    max-height: 420px;
+}
+
+#instructions {
+    background: #fcfcff;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #eee;
+}
+
+#instructions li {
+    margin-bottom: 8px
+}
+
+.notes {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.92rem
+}
