@@ -5,18 +5,19 @@
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <title>Knit Pattern - Canvas -> Steps</title>
         <link rel="stylesheet" href="https://unpkg.com/neobrutalismcss@latest" />
-        <link rel="stylesheet" href="styles.css" />
+        <link rel="stylesheet" href="nb_style.css" />
     </head>
     <body>
         <main>
             <h1>Patternizer -- Knitting Pattern Generator</h1>
 
             <div class="controls">
-                <label class="control-row">
+                <label class="control-row top-row">
                     Text:
                     <input id="wordInput" type="text" placeholder="Enter a word or short phrase" value="HELLO" />
                 </label>
-                <label class="control-row">
+
+                <label class="control-row top-row">
                     Width (stitches):
                     <select id="widthPreset">
                         <option value="">— none —</option>
@@ -27,7 +28,7 @@
                     </select>
                 </label>
 
-                <label class="control-row">
+                <label class="control-row top-row">
                     Height (rows):
                     <select id="heightPreset">
                         <option value="">— none —</option>
@@ -38,12 +39,12 @@
                     </select>
                 </label>
 
-                <label class="control-row small">
+                <label class="control-row small btm-row">
                     <input id="invertToggle" type="checkbox" />
                     Invert (Letters = Knit)
                 </label>
 
-                <label class="control-row small">
+                <label class="control-row small btm-row">
                     <input id="alternateRows" type="checkbox" checked />
                     Show working order (zig-zag)
                 </label>

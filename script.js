@@ -21,14 +21,14 @@ function generatePattern() {
 
     const warningEL = document.getElementById("warning");
     const instructionsEL = document.getElementById("instructions");
-    const patternEL = document.getElementById("pattern");
+    // const patternEL = document.getElementById("pattern");
     const notesEL = document.getElementById("notes");
 
     warningEL.style.display = "none";
     warningEL.textContent = "";
 
     instructionsEL.innerHTML = "";
-    patternEL.textContent = "";
+    // patternEL.textContent = "";
     notesEL.textContent = "";
 
     if(!text){
@@ -185,24 +185,23 @@ function generatePattern() {
         if(alternateRows) {
             if(rowNum % 2 === 1) {
                 workingSeq = seq.split("").reverse().join("");
-                directionNote = "RS (work right-to-left)";
+                directionNote = "RS ";
             } else {
-                directionNote = "WS (work left-to-right)";
+                directionNote = "WS ";
             }
         }
-        instructions.push(`Row ${rowNum} — ${directionNote}: ${rle(workingSeq)}.`);
+        console.log(directionNote)
+        let side = (directionNote.trim() === "RS" ? "right-side" : "wrong-side");
+        let rowData = `<strong class="${side}">Row ${rowNum}. ${directionNote}:</strong> ${rle(workingSeq)}`
+        console.log(rowData)
+        instructions.push(rowData);
     }
 
-    instructions.push("Bind off all stitches.");
+    instructions.push(`<strong style='padding-top:10px;'>Bind off all stitches, you're done! </strong>`);
 
-    instructionsEL.innerHTML = "";
-    instructions.forEach(s => {
-        const li = document.createElement("li");
-        li.textContent = s;
-        instructionsEL.appendChild(li);
-    });
+    instructionsEL.innerHTML = instructions.join("<br>");
 
-    patternEL.textContent = chart.map(r => r.join("")).join("\n");
+    // patternEL.textContent = chart.map(r => r.join("")).join("\n");
     notesEL.textContent = `Pattern: ${targetStitches} stitches × ${targetRows} rows. 
     (glyph pixel box: ${glyphPxW}×${glyphPxH} px). 
     Cell size X:${(stitchSizeX).toFixed(2)} px, Y:${(stitchSizeY).toFixed(2)} px.`;

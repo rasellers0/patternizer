@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+        <title>Knit Pattern - Canvas -> Steps</title>
+        <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous"></script> -->
+        <link rel="stylesheet" href="nb_style.css" />
+    </head>
+    <body>
+        <main class="container">
+            <h1>Patternizer <span class="small text-muted fs-3 text">Knitting Pattern Generator</span></h1>
+            <form class="col-sm-12 p-2">
+                <div class="row col-sm-12">
+                    <div class="col-sm-4 d-inline-flex col-form-label text-right">
+                        <label for="wordInput" class="form-label d-flex justify-content-end align-items-end pe-3">Text: </label>
+                        <input id="wordInput" name="wordInput" class="form-control" 
+                        type="text" placeholder="Enter a word or short phrase" value="HELLO" />
+                    </div>
+
+                    <div class="col-sm-4 d-inline-flex col-form-label text-right">                        
+                        <label for="widths" class="form-label d-flex justify-content-end align-items-end pe-3">Width (stitches): </label>
+                        <select id="widthPreset" name="widths" class="form-select">
+                            <option value="">— none —</option>
+                            <option value="small">Small (20)</option>
+                            <option value="medium" selected>Medium (30)</option>
+                            <option value="large">Large (40)</option>
+                            <option value="xlarge">X-Large (50)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-4 d-inline-flex col-form-label text-right">                        
+                        <label for="heights" class="form-label d-flex justify-content-end align-items-end pe-3">Height (rows): </label>
+                        <select id="heightPreset" name="heights" class="form-select">
+                            <option value="">— none —</option>
+                            <option value="small">Small (20)</option>
+                            <option value="medium" selected>Medium (30)</option>
+                            <option value="large">Large (40)</option>
+                            <option value="xlarge">X-Large (50)</option>
+                        </select>
+                    </div>
+                    
+                </div>
+
+                <div class="row col-sm-12">
+                    <div class="col-sm-6 float-start">
+
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-check">
+                            <label class="form-check-label">Invert (Letters = Knit) </label>
+                            <input class="form-check-input" id="invertToggle" type="checkbox" />
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-3">
+                        <div class="form-check">
+                            <label class="form-check-label">Show working order (zig-zag) </label>
+                            <input id="alternateRows" class="form-check-input" type="checkbox" checked />
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="button-group ps-5">
+                    <button id="generateBtn" class="button ">Generate Pattern</button>
+                </div>
+                
+            </form>
+
+            <div id="warning" class="warning" role="status" aria-live="polite" style="display:none"></div>
+
+
+            <section class="output">
+                <h2>Instructions</h2>
+                <ul id="instructions"></ul>
+                <!-- <h2>Compact stitch chart (K = knit, P = Purl)</h2>
+                <pre id="pattern" aria-live="polite"></pre> -->
+                <h3>Notes</h3>
+                <div id="notes" class="notes"></div>
+            </section>
+        </main>
+        <canvas id="hiddenCanvas" style="display:none"></canvas>
+        <script src="script.js"></script>
+    </body>
+
+</html>
