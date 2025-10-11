@@ -38,6 +38,18 @@ function generatePattern() {
         return;
     }
 
+    if(text === 'MAGA'){
+        warningEL.style.display = "block";
+        warningEL.textContent = "No. Fuck you."
+        return;
+    }
+
+    let dirtyWords = ["ASS", "FUCK", "DAMN", "SHIT", "BALLS"]
+    if(dirtyWords.includes(text)){
+        warningEL.style.display = "block";
+        warningEL.textContent = "What are you, thirteen? Fine, whatever."
+    }
+
     const canvas = document.getElementById("hiddenCanvas");
     const ctx = canvas.getContext("2d");
 
@@ -119,7 +131,7 @@ function generatePattern() {
         const pct = Math.round(percentStretch * 100);
         warningEL.style.display = "block";
         warningEL.textContent = `The requested dimensions will distort the letters by about ${pct}%. Letters may appear stretched or squashed.`;
-    } else {
+    } else if(warningEL.textContent === "") {
         warningEL.style.display = "none";
         warningEL.textContent = "";
     }
