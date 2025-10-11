@@ -17,7 +17,9 @@ function generatePattern() {
     const text = (document.getElementById("wordInput").value || "").trim().toUpperCase();
     const widthChoice = document.getElementById("widthPreset").value;
     const heightChoice = document.getElementById("heightPreset").value;
-    const invert = !!document.getElementById("alternateRows").checked;
+
+    // const alternateRows = !!document.getElementById("alternateRows").checked;
+    const invert = !!document.getElementById("invertToggle").checked;
 
     const warningEL = document.getElementById("warning");
     const instructionsEL = document.getElementById("instructions");
@@ -181,27 +183,23 @@ function generatePattern() {
         const rowNum = i + 1;
         let seq = chart[i].join("");
         let workingSeq = seq;
-        let directionNote = "Chart order (left-to-right)";
-
-        if(alternateRows) {
-            if(rowNum % 2 === 1) {
-                workingSeq = seq.split("").reverse().join("");
-                directionNote = "RS ";
-            } else {
-                directionNote = "WS ";
-            }
+        if(rowNum % 2 === 1) {
+            workingSeq = seq.split("").reverse().join("");
+            directionNote = "RS ";
+        } else {
+            directionNote = "WS ";
         }
+
         let side = (directionNote.trim() === "RS" ? "right-side" : "wrong-side");
         let rowData = `<strong class="${side}">Row ${rowNum}. ${directionNote}:</strong> ${rle(workingSeq)}`
         instructions.push(rowData);
     }
 
-    instructions.push(`<strong style='padding-bottom:10px;'>Bind off all stitches, you're done! </strong>`);
+    instructions.push(`<strong style='padding-top:10px;'>Bind off all stitches, you're done! </strong>`);
 
     instructionsEL.innerHTML = instructions.join("<br>");
 
     function renderColoredPattern(patternEl, chart) {
-        // const patternEl = document.getElementById("patternOutput");
         const html = chart
         .map(row => row
             .map(stitch => {
@@ -210,7 +208,7 @@ function generatePattern() {
                 } else if (stitch === "P") {
                     return `<span class="stitch purl">P</span>`;
                 } else {
-                    return stitch; // fallback, in case of blanks/spaces
+                    return stitch;
                     }
                 })
                 .join("")
