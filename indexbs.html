@@ -7,16 +7,12 @@
         <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
         <title>Knit Pattern - Canvas -> Steps</title>
         <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous"></script> -->
         <link rel="stylesheet" href="nb_style.css" />
     </head>
     <body>
         <main class="container">
             <h1>Patternizer <span class="small text-muted fs-3 text">Knitting Pattern Generator</span></h1>
-            <form class="col-sm-12 p-2">
+            <section class="col-sm-12 p-2">
                 <div class="row col-sm-12">
                     <div class="col-sm-4 d-inline-flex col-form-label text-right">
                         <label for="wordInput" class="form-label d-flex justify-content-end align-items-end pe-3">Text: </label>
@@ -71,7 +67,7 @@
                     <button id="generateBtn" class="button ">Generate Pattern</button>
                 </div>
                 
-            </form>
+            </section>
 
             <div id="warning" class="warning" role="status" aria-live="polite" style="display:none"></div>
 
@@ -79,8 +75,9 @@
             <section class="output">
                 <h2>Instructions</h2>
                 <ul id="instructions"></ul>
-                <!-- <h2>Compact stitch chart (K = knit, P = Purl)</h2>
-                <pre id="pattern" aria-live="polite"></pre> -->
+                <h2>Pattern Mockup (K = knit, P = Purl)</h2>
+                <pre id="patternOutput" class="pattern"></pre>
+                <!-- <pre id="pattern" aria-live="polite"></pre> -->
                 <h3>Notes</h3>
                 <div id="notes" class="notes"></div>
             </section>

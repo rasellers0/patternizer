@@ -21,14 +21,14 @@ function generatePattern() {
 
     const warningEL = document.getElementById("warning");
     const instructionsEL = document.getElementById("instructions");
-    // const patternEL = document.getElementById("pattern");
+    const patternEL = document.getElementById("patternOutput");
     const notesEL = document.getElementById("notes");
 
     warningEL.style.display = "none";
     warningEL.textContent = "";
 
     instructionsEL.innerHTML = "";
-    // patternEL.textContent = "";
+    patternEL.textContent = "";
     notesEL.textContent = "";
 
     if(!text){
@@ -116,7 +116,7 @@ function generatePattern() {
     if (percentStretch > DISTORTION_THRESHOLD){
         const pct = Math.round(percentStretch * 100);
         warningEL.style.display = "block";
-        warningEL.textContent = `Warning: The requested width/height combination will distort the letters by about ${pct}% relative. The pattern is still generated but letters may look stretched or squashed.`;
+        warningEL.textContent = `The requested dimensions will distort the letters by about ${pct}%. Letters may appear stretched or squashed.`;
     } else {
         warningEL.style.display = "none";
         warningEL.textContent = "";
@@ -153,8 +153,9 @@ function generatePattern() {
     const chart = cells.map(row => row.map(bit => (bit ? (invert ? "K" : "P") : (invert ? "P" : "K"))));
     
     const instructions = [];
-    instructions.push(`Cast on ${targetStitches} stitches.`);
-    instructions.push(`Work ${targetRows} rows following the instructions below.`);
+    instructions.push(`<strong>Cast on ${targetStitches} stitches.</strong>`);
+    // instructions.push(`Cast on ${targetStitches} stitches.`);
+    // instructions.push(`Work ${targetRows} rows following the instructions below.`);
 
     function rle(seq) {
         if(!seq || seq.length === 0){
@@ -190,18 +191,37 @@ function generatePattern() {
                 directionNote = "WS ";
             }
         }
-        console.log(directionNote)
         let side = (directionNote.trim() === "RS" ? "right-side" : "wrong-side");
         let rowData = `<strong class="${side}">Row ${rowNum}. ${directionNote}:</strong> ${rle(workingSeq)}`
-        console.log(rowData)
         instructions.push(rowData);
     }
 
-    instructions.push(`<strong style='padding-top:10px;'>Bind off all stitches, you're done! </strong>`);
+    instructions.push(`<strong style='padding-bottom:10px;'>Bind off all stitches, you're done! </strong>`);
 
     instructionsEL.innerHTML = instructions.join("<br>");
 
+    function renderColoredPattern(patternEl, chart) {
+        // const patternEl = document.getElementById("patternOutput");
+        const html = chart
+        .map(row => row
+            .map(stitch => {
+                if (stitch === "K") {
+                    return `<span class="stitch knit">K</span>`;
+                } else if (stitch === "P") {
+                    return `<span class="stitch purl">P</span>`;
+                } else {
+                    return stitch; // fallback, in case of blanks/spaces
+                    }
+                })
+                .join("")
+            )
+            .join("<br>");
+  
+        patternEl.innerHTML = html;
+}
+
     // patternEL.textContent = chart.map(r => r.join("")).join("\n");
+    renderColoredPattern(patternEL, chart);
     notesEL.textContent = `Pattern: ${targetStitches} stitches × ${targetRows} rows. 
     (glyph pixel box: ${glyphPxW}×${glyphPxH} px). 
     Cell size X:${(stitchSizeX).toFixed(2)} px, Y:${(stitchSizeY).toFixed(2)} px.`;

@@ -83,16 +83,31 @@ select, input[type="text"], input[type="checkbox"] {
 }
 
 #pattern {
-  background: #fff;
+  background: #f9ef99;
   border: var(--border-thickness) solid #000;
   box-shadow: var(--shadow-offset) var(--shadow-offset) 0 #000;
   font-family: "Courier New", monospace;
-  font-size: 17px;
-  line-height: 1.8;
-  letter-spacing: 0.02em;
+  /* font-size: 17px;
+  line-height: 1.8; */
+  font-size: 1.2rem;  
+  line-height: 2.0;
+  letter-spacing: 0.5em;
   padding: 24px;
   margin-top: 20px;
   margin-bottom: 24px;
+}
+
+
+.stitch.knit {
+  color: #3f98e5;        /* Blue */
+  font-weight: bold;
+  padding:2px;
+}
+
+.stitch.purl {
+  color: #49de5a;        /* Green */
+  padding:2px;
+  /* font-weight: bold; */
 }
 
 #pattern code, 
