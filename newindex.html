@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Patternizer - Knitting Pattern Generator</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="newstyles.css">
+</head>
+<body>
+<div class="container">
+  <div class="row mb-4">
+    <div class="col">
+      <h1>Patternizer <span><small>Knitting Pattern Generator</small></span></h1>
+    </div>
+  </div>
+  <div class="row g-3 controls">
+    <div class="col-md-4">
+      <label class="form-label">Word or Phrase</label>
+      <input id="wordInput" type="text" class="form-control" placeholder="Enter text">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Width</label>
+      <select id="widthPreset" class="form-select">
+        <option value="">Auto</option>
+        <option value="small">Small</option>
+        <option value="medium">Medium</option>
+        <option value="large">Large</option>
+        <option value="xlarge">XL</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Height</label>
+      <select id="heightPreset" class="form-select">
+        <option value="">Auto</option>
+        <option value="small">Small</option>
+        <option value="medium">Medium</option>
+        <option value="large">Large</option>
+        <option value="xlarge">XL</option>
+      </select>
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="invertToggle">
+        <label class="form-check-label">Invert stitches</label>
+      </div>
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+      <button class="btn btn-dark w-100" onclick="generatePattern()">Generate Pattern</button>
+    </div>
+  </div>
+  <div class="row mt-4 controls">
+    <div class="col-12 mb-2">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="borderEnable" checked>
+        <label class="form-check-label fw-bold">Enable Borders</label>
+      </div>
+    </div>
+    <div id="borderControls">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Pattern</label>
+          <select id="borderPattern" class="form-select">
+            <option value="rib" selected>Rib 1×1</option>
+            <option value="garter">Garter</option>
+            <option value="seed">Seed</option>
+            <option value="moss">Moss</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Width</label>
+          <select id="borderWidth" class="form-select">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="5" selected>5</option>
+            <option value="8">8</option>
+            <option value="10">10</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">Sizing</label>
+          <select id="borderSizing" class="form-select">
+            <option value="expand" selected>Add to pattern</option>
+            <option value="consume">Eat into pattern</option>
+          </select>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-12">
+          <label class="form-label">Sides</label>
+        </div>
+        <div class="col-auto">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="borderTop" checked>
+            <label class="form-check-label">Top</label>
+          </div>
+        </div>
+        <div class="col-auto">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="borderBottom" checked>
+            <label class="form-check-label">Bottom</label>
+          </div>
+        </div>
+        <div class="col-auto">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="borderLeft" checked>
+            <label class="form-check-label">Left</label>
+          </div>
+        </div>
+        <div class="col-auto">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="borderRight" checked>
+            <label class="form-check-label">Right</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-3">
+    <div class="col">
+      <div id="warning"></div>
+    </div>
+  </div>
+  <div class="row mt-4" id="instructions-row">
+    <div class="col">
+      <h2>Instructions</h2>
+      <div id="instructions"></div>
+    </div>
+  </div>
+  <div class="row mt-4" id="patternOutput-row">
+    <div class="col">
+      <h2>Pattern Chart</h2>
+      <div id="patternOutput" class="pattern-chart"></div>
+    </div>
+  </div>
+  <div class="row mt-3" id="notes-row">
+    <div class="col">
+        <h2>Notes</h2>
+      <div id="notes"></div>
+    </div>
+  </div>
+</div>
+<canvas id="hiddenCanvas" style="display:none;"></canvas>
+<script src="newscript.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const enable = document.getElementById("borderEnable");
+  const controls = document.getElementById("borderControls");
+  function updateBorderUI() {
+    controls.style.display = enable.checked ? "block" : "none";
+  }
+  enable.addEventListener("change", updateBorderUI);
+  updateBorderUI();
+});
+</script>
+
+</body>
+</html>

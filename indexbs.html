@@ -12,17 +12,17 @@
     <body>
         <main class="container">
             <h1>Patternizer <span class="small text-muted fs-3 text">Knitting Pattern Generator</span></h1>
-            <section class="col-sm-12 p-2">
+            <section class="col-sm-12">
                 <div class="row col-sm-12">
                     <div class="col-sm-4 d-inline-flex col-form-label text-right">
                         <label for="wordInput" class="form-label d-flex justify-content-end align-items-end pe-3">Text: </label>
-                        <input id="wordInput" name="wordInput" class="form-control" 
+                        <input id="wordInput" name="wordInput" class="form-control forminput" 
                         type="text" placeholder="Enter a word or short phrase" value="HELLO" />
                     </div>
 
                     <div class="col-sm-4 d-inline-flex col-form-label text-right">                        
                         <label for="widths" class="form-label d-flex justify-content-end align-items-end pe-3">Width (stitches): </label>
-                        <select id="widthPreset" name="widths" class="form-select">
+                        <select id="widthPreset" name="widths" class="form-select forminput">
                             <option value="">— none —</option>
                             <option value="small">Small (20)</option>
                             <option value="medium" selected>Medium (30)</option>
@@ -33,37 +33,67 @@
 
                     <div class="col-sm-4 d-inline-flex col-form-label text-right">                        
                         <label for="heights" class="form-label d-flex justify-content-end align-items-end pe-3">Height (rows): </label>
-                        <select id="heightPreset" name="heights" class="form-select">
+                        <select id="heightPreset" name="heights" class="form-select forminput">
                             <option value="">— none —</option>
                             <option value="small">Small (20)</option>
                             <option value="medium" selected>Medium (30)</option>
                             <option value="large">Large (40)</option>
                             <option value="xlarge">X-Large (50)</option>
                         </select>
-                    </div>
-                    
+                    </div> 
                 </div>
 
-                <div class="row col-sm-12">
-                    <div class="col-sm-6 float-start"></div>
-                    <div class="col-sm-3"></div>
-                    <div class="col-sm-3 float-end">
+                <div class="row col-12" style="padding-top:1.2em;">
+                    <div class="col-3">
                         <div class="form-check">
                             <label class="form-check-label">Invert (Letters = Knit) </label>
-                            <input class="form-check-input" id="invertToggle" type="checkbox" />
+                            <input class="form-check-input forminput" name="invertToggle" id="invertToggle" type="checkbox" />
                         </div>
                     </div>
-                    
-                    <!-- <div class="col-sm-3">
-                        <div class="form-check">
-                            <label class="form-check-label">Show working order (zig-zag) </label>
-                            <input id="alternateRows" class="form-check-input" type="checkbox" checked />
+                    <div class="col-9">
+                        <h6>Borders</h6>
+                        <hr class="col-sm-12 row">
+                        
+                         <div class="col-sm-12 row" style=" flex-wrap: nowrap;">
+                            <div class="checkbox-group col-5">
+                                <div class="col-auto form-check border-chk">
+                                    <input class="form-check-input forminput" name="borderTop" type="checkbox" id="borderTop" checked>
+                                    <label class="form-check-label" for="borderTop">Top</label>
+                                </div>
+                                <div class="col-auto form-check border-chk">
+                                    <input class="form-check-input forminput" name="borderBottom" type="checkbox" id="borderBottom" checked>
+                                    <label class="form-check-label" for="borderBottom">Bottom</label>
+                                </div>
+                                <div class="col-auto form-check border-chk">
+                                    <input class="form-check-input forminput" name="borderLeft" type="checkbox" id="borderLeft" checked>
+                                    <label class="form-check-label" for="borderLeft">Left</label>
+                                </div>
+                                <div class="col-auto form-check border-chk">
+                                    <input class="form-check-input forminput" name="borderRight" type="checkbox" id="borderRight" checked>
+                                    <label class="form-check-label" for="borderRight">Right</label>
+                                </div>
+                            </div>
+                            <div class="col-7 input-group">
+                                <div class="col-sm-3 d-inline-flex col-form-label text-right" style="padding-right:10px;">
+                                    <label for="borderWidth" class="form-label d-flex justify-content-end align-items-end pe-3">Width</label>
+                                    <input type="number" name="borderWidth" class="form-control forminput" id="borderWidth" value="2" min="1" max="20">
+                                </div>
+                                <div class="col-sm-4 d-inline-flex col-form-label text-right">
+                                    <label for="borderPattern" class="form-label d-flex justify-content-end align-items-end pe-3">Pattern</label>
+                                    <select class="form-select forminput" id="borderPattern" name="borderPattern">
+                                        <option value="garter" selected>Garter</option>
+                                        <option value="stockinette">Stockinette</option>
+                                        <option value="seed">Seed</option>
+                                        <option value="rib">Rib 1x1</option>
+                                        <option value="moss">Moss</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                    </div> -->
-                    
+                    </div>  
                 </div>
-                <div class="button-group ps-5">
-                    <button id="generateBtn" class="button ">Generate Pattern</button>
+                <div class="button-group" style="padding-top:15px;">
+                    <button id="generateBtn" class="button col-sm-3 ms-3">Generate Pattern</button>
                 </div>
                 
             </section>
@@ -82,7 +112,7 @@
             </section>
         </main>
         <canvas id="hiddenCanvas" style="display:none"></canvas>
-        <script src="script.js"></script>
+        <script src="newscript.js"></script>
     </body>
 
 </html>
