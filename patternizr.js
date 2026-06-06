@@ -146,86 +146,41 @@ function renderPipeline(chart, el) {
 }
 
 
-function determinePatternDimensions(
-    glyphPxW,
-    glyphPxH,
-    widthChoice,
-    heightChoice,
-    warningEL
-) {
-
-    let targetStitches =
-        widthChoice && PRESETS[widthChoice]
-            ? PRESETS[widthChoice].width
-            : null;
-
-    let targetRows =
-        heightChoice && PRESETS[heightChoice]
-            ? PRESETS[heightChoice].height
-            : null;
-
+function determinePatternDimensions(glyphPxW, glyphPxH, wChoice, hChoice, warningEL) {
+    let targetStitches = wChoice && PRESETS[wChoice] ? PRESETS[wChoice].width : null;
+    let targetRows = hChoice && PRESETS[hChoice] ? PRESETS[hChoice].height : null;
     const defaultStitches = 30;
-    const defaultRows =
-        Math.round((glyphPxH / glyphPxW) * defaultStitches) || 15;
-
+    const defaultRows = Math.round((glyphPxH / glyphPxW) * defaultStitches) || 15;
     if (!targetStitches && !targetRows) {
-
         targetStitches = defaultStitches;
         targetRows = defaultRows;
-
     } else if (targetStitches && !targetRows) {
-
         const stitchSizePx = glyphPxW / targetStitches;
-
-        targetRows = Math.max(
-            1,
-            Math.round(glyphPxH / stitchSizePx)
-        );
-
+        targetRows = Math.max(1, Math.round(glyphPxH / stitchSizePx));
     } else if (!targetStitches && targetRows) {
-
         const rowSizePx = glyphPxH / targetRows;
-
-        targetStitches = Math.max(
-            1,
-            Math.round(glyphPxW / rowSizePx)
-        );
+        targetStitches = Math.max(1, Math.round(glyphPxW / rowSizePx));
     }
 
     const stitchSizeX = glyphPxW / targetStitches;
     const stitchSizeY = glyphPxH / targetRows;
 
     const ratio = stitchSizeX / stitchSizeY;
-
-    const percentStretch =
-        Math.max(ratio, 1 / ratio) - 1;
+    const percentStretch = Math.max(ratio, 1 / ratio) - 1;
 
     const DISTORTION_THRESHOLD = 0.20;
-
     if (warningEL) {
-
         if (percentStretch > DISTORTION_THRESHOLD) {
-
-            const pct =
-                Math.round(percentStretch * 100);
-
+            const pct = Math.round(percentStretch * 100);
             warningEL.style.display = "block";
-            warningEL.textContent =
-                `The requested dimensions will distort letters by ~${pct}%.`;
-
+            warningEL.textContent = `The requested dimensions will distort letters by ~${pct}%.`;
         } else {
-
             warningEL.style.display = "none";
             warningEL.textContent = "";
         }
     }
 
-    return {
-        targetStitches,
-        targetRows,
-        stitchSizeX,
-        stitchSizeY
-    };
+    return {targetStitches, targetRows, stitchSizeX, stitchSizeY};
 }
 
 function getGlyphDimensions(maxX, minX, maxY, minY) {
