@@ -48,6 +48,11 @@ function renderColoredPattern(el, chart) {
 
             html += `<span class="${stitchClass}${regionClass}">${stitch}</span>`;
         }
+
+        if (r === 0) {
+            console.log("Row length:", row.length);
+        }
+
         html += `</div>`;
     }
     return html;
@@ -187,7 +192,6 @@ function getGlyphDimensions(maxX, minX, maxY, minY) {
     let glyphPxW = maxX - minX + 1;
     let glyphPxH = maxY - minY + 1;
     return {'glyphPxW': glyphPxW, 'glyphPxH': glyphPxH};
-    
 }
 
 
@@ -249,34 +253,34 @@ function generatePattern() {
     glyphDimensions = getGlyphDimensions(maxX, minX, maxY, minY);
     debugStep("glyph dimensions", glyphDimensions);
 
-    const dims = determinePatternDimensions(
-    glyphDimensions.glyphPxW,
-    glyphDimensions.glyphPxH,
-    widthChoice,
-    heightChoice,
-    warningEL
-);
+    const dims = determinePatternDimensions(glyphDimensions.glyphPxW, glyphDimensions.glyphPxH, widthChoice, heightChoice, warningEL);
+    
+    const glyph = buildCells(pixels, canvas.width, canvas.height, minX, minY, maxX, maxY, dims.targetRows, dims.targetStitches);
 
-const glyph = buildCells(
-    pixels,
-    canvas.width,
-    canvas.height,
-    minX,
-    minY,
-    maxX,
-    maxY,
-    dims.targetRows,
-    dims.targetStitches
-);
-
-    // const glyph = buildCells(pixels, canvas.width, canvas.height, minX, minY, maxX, maxY, 15, 30);
     debugStep("cells built");
 
+    console.log("Glyph cells:");
+    console.log(glyph.cells.map(row => row.map(v => v ? "#" : ".").join("")).join("\n"));
 
     const chart = buildChart(glyph.cells, invert);
     debugStep("chart built");
 
-    const chartWithBorders = applyBorders(chart, {borderWidth: 5,borderPattern: "rib"});
+    const borderEnable = document.getElementById("borderEnable");
+    const borderSelected = document.querySelectorAll('.border-sides');
+
+    const borderControls = document.querySelectorAll('.border-settings');
+
+    const selectedValues = Object.fromEntries(
+        Array.from(borderSelected).map(cb => [cb.name || cb.id, cb.value === 'on' ? true : false])
+    );
+
+    const borderSettings = Object.fromEntries(
+        Array.from(borderControls).map(select => [select.name || select.id, select.value])
+    );
+
+    const borderOpts = {...selectedValues, ...borderSettings, borderEnabled: borderEnable.checked};
+
+    const chartWithBorders = applyBorders(chart, borderOpts);
     debugStep("borders applied");
 
     const instructions = buildInstructions(chartWithBorders);
@@ -335,7 +339,9 @@ function applyBorders(chart, settings) {
     // 1. place body first (important ordering rule)
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-            result[r + rowOffset][c + colOffset] = chart[r][c];
+            rowIndex = r + parseInt(rowOffset);
+            colIndex = c + parseInt(colOffset);
+            result[rowIndex][colIndex] = chart[r][c];
         }
     }
 
@@ -355,6 +361,12 @@ function splitRowByRegion(row) {
     let buffer = [];
 
     for (const cell of row) {
+        if(!cell){
+            console.log("Null cell found, defaulting to 'body'", cell);
+        }
+        if (!cell.region){
+            console.log("Cell without region found, defaulting to 'body'", cell);
+        }
         if (cell.region !== currentRegion) {
             segments.push({
                 region: currentRegion,
@@ -437,6 +449,11 @@ function computeCanvasDimensions(textPxW, textPxH, paddingPx, transform) {
 
 function drawTextToCanvas(ctx, text, paddingPx, transform) {
     ctx.save();
+
+    const baseFontPx = 200;
+    const fontSpec = `bold ${baseFontPx}px monospace`;
+    ctx.font = fontSpec;
+
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.fillStyle = "black";
@@ -446,6 +463,11 @@ function drawTextToCanvas(ctx, text, paddingPx, transform) {
     if (transform.rotate !== 0) {ctx.rotate(transform.rotate);}
 
     ctx.fillText(text, 0, 0);
+
+    console.log("Text drawn to canvas:");
+    console.log({ canvasWidth: ctx.canvas.width, canvasHeight: ctx.canvas.height});
+    console.log(ctx.font);
+
     ctx.restore();
 }
 
@@ -556,9 +578,9 @@ function buildInstructions(chart) {
             if (seg.region === "body") { lines.push(`Body(${compressed})`); }
             lines.push(formatRegion(seg.region, compressed));
 
-            // if (seg.region === "border") {
-            //     lines.push(`Border(${compressed})`);
-            // }
+            if (seg.region === "border") {
+                lines.push(`Border(${compressed})`);
+            }
         }
 
         instructions.push(
