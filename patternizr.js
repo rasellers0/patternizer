@@ -5,7 +5,6 @@ const PRESETS = {
     xlarge: 60
 };
 
-// const orientation = document.getElementById("orientation")?.value || "horizontal";
 
 const ORIENTATION = {
     HORIZONTAL: "horizontal",
@@ -140,11 +139,6 @@ function buildCells(pixels, canvasW, canvasH, minX, minY, maxX, maxY, targetRows
     return { cells, glyphPxW, glyphPxH };
 }
 
-// function buildChart(cells, invert) {
-//     return cells.map(row =>
-//         row.map(bit => ({ stitch: bit ? (invert ? "K" : "P") : (invert ? "P" : "K"), region: "body"}))
-//     );
-// }
 
 function buildChart(cells, invert) {
     const stitchFor = (bit) => bit ? (invert ? "K" : "P") : (invert ? "P" : "K");
@@ -153,31 +147,16 @@ function buildChart(cells, invert) {
 
 function addBuffer(chart, buffer = 2) {
     if (!chart.length) return chart;
-
     const width = chart[0].length;
-
-    const makeBufferCell = () => ({
-        stitch: "K",
-        region: "buffer"
-    });
-
-    const makeBufferRow = () =>
-        Array(width + buffer * 2)
-            .fill(null)
-            .map(makeBufferCell);
-
+    const makeBufferCell = () => ({stitch: "K", region: "buffer"});
+    const makeBufferRow = () => Array(width + buffer * 2).fill(null).map(makeBufferCell);
     const paddedRows = chart.map(row => {
         const side = Array(buffer).fill(null).map(makeBufferCell);
         return [...side, ...row, ...side];
     });
 
     const topBottom = Array(buffer).fill(null).map(makeBufferRow);
-
-    return [
-        ...topBottom,
-        ...paddedRows,
-        ...topBottom
-    ];
+    return [...topBottom, ...paddedRows, ...topBottom];
 }
 
 function renderPipeline(chart, el) {
@@ -296,7 +275,6 @@ function generatePattern() {
     console.log("Glyph cells:");
     console.log(glyph.cells.map(row => row.map(v => v ? "#" : ".").join("")).join("\n"));
 
-    // const chart = buildChart(glyph.cells, invert);
     const chart = addBuffer(buildChart(glyph.cells, invert), 2);
     debugStep("chart built");
 
@@ -371,7 +349,6 @@ function applyBorders(chart, settings) {
     const rowOffset = settings.borderTop ? w : 0;
     const colOffset = settings.borderLeft ? w : 0;
 
-    // 1. place body first (important ordering rule)
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
             rowIndex = r + parseInt(rowOffset);
@@ -380,7 +357,6 @@ function applyBorders(chart, settings) {
         }
     }
 
-    // 2. build + apply borders
     const regions = buildBorderRegions(newRows, newCols, w, settings);
     for (const region of regions) {
         console.log(`Applying region: ${region.regionName} (rows ${region.startRow}-${region.endRow}, cols ${region.startCol}-${region.endCol})`);
@@ -398,7 +374,6 @@ function splitRowByRegion(row) {
 
     for (const cell of row) {
         if(!cell || !cell.region){
-            // console.log("Null cell found, defaulting to 'body'", cell);
             continue;
         }
         if (cell.region !== currentRegion) {
@@ -427,11 +402,9 @@ function generateBorderStitch(region, r, c, settings) {
 }
 
 function ribStitch(region, r, c) {
-    // horizontal rib (top/bottom borders)
     if (region === "topBorder" || region === "bottomBorder") {
         return (r % 2 === 0) ? "K" : "P";
     }
-    // vertical rib (left/right borders)
     if (region === "leftBorder" || region === "rightBorder") {
         return (r % 2 === 0) ? "K" : "P";
     }
@@ -446,7 +419,6 @@ function readSettings() {
     
     return {
         text: document.getElementById("wordInput").value.trim().toUpperCase(),
-        // orientation: document.getElementById("orientationSelect").value,
         orientation: "horizontal", // default
         invert: document.getElementById("invertToggle").checked,
         width: PRESETS[widthChoice] || 30,
@@ -497,11 +469,6 @@ function drawTextToCanvas(ctx, text, paddingPx, transform) {
     if (transform.rotate !== 0) {ctx.rotate(transform.rotate);}
 
     ctx.fillText(text, 0, 0);
-
-    // console.log("Text drawn to canvas:");
-    // console.log({ canvasWidth: ctx.canvas.width, canvasHeight: ctx.canvas.height});
-    // console.log(ctx.font);
-
     ctx.restore();
 }
 
@@ -623,8 +590,6 @@ function buildInstructions(chart) {
         );
     });
 
-    // instructions.push(`<strong>Bind off all stitches.</strong>`);
-
     return instructions;
 }
 
@@ -690,7 +655,6 @@ function renderPattern(container, chart) {
             const span = document.createElement("span");
             span.className = cell.stitch === "K" ? "k" : "p";
             span.textContent = cell.stitch;
-            // optional visual hint for border later
             if (cell.region === "border") { span.style.opacity = "0.5"; }
             rowDiv.appendChild(span);
         });
