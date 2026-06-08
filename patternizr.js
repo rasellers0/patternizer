@@ -140,10 +140,44 @@ function buildCells(pixels, canvasW, canvasH, minX, minY, maxX, maxY, targetRows
     return { cells, glyphPxW, glyphPxH };
 }
 
+// function buildChart(cells, invert) {
+//     return cells.map(row =>
+//         row.map(bit => ({ stitch: bit ? (invert ? "K" : "P") : (invert ? "P" : "K"), region: "body"}))
+//     );
+// }
+
 function buildChart(cells, invert) {
-    return cells.map(row =>
-        row.map(bit => ({ stitch: bit ? (invert ? "K" : "P") : (invert ? "P" : "K"), region: "body"}))
-    );
+    const stitchFor = (bit) => bit ? (invert ? "K" : "P") : (invert ? "P" : "K");
+    return cells.map(row => row.map(bit => ({stitch: stitchFor(bit), region: "body"})));
+}
+
+function addBuffer(chart, buffer = 2) {
+    if (!chart.length) return chart;
+
+    const width = chart[0].length;
+
+    const makeBufferCell = () => ({
+        stitch: "K",
+        region: "buffer"
+    });
+
+    const makeBufferRow = () =>
+        Array(width + buffer * 2)
+            .fill(null)
+            .map(makeBufferCell);
+
+    const paddedRows = chart.map(row => {
+        const side = Array(buffer).fill(null).map(makeBufferCell);
+        return [...side, ...row, ...side];
+    });
+
+    const topBottom = Array(buffer).fill(null).map(makeBufferRow);
+
+    return [
+        ...topBottom,
+        ...paddedRows,
+        ...topBottom
+    ];
 }
 
 function renderPipeline(chart, el) {
@@ -262,7 +296,8 @@ function generatePattern() {
     console.log("Glyph cells:");
     console.log(glyph.cells.map(row => row.map(v => v ? "#" : ".").join("")).join("\n"));
 
-    const chart = buildChart(glyph.cells, invert);
+    // const chart = buildChart(glyph.cells, invert);
+    const chart = addBuffer(buildChart(glyph.cells, invert), 2);
     debugStep("chart built");
 
     const borderEnable = document.getElementById("borderEnable");
@@ -394,7 +429,7 @@ function generateBorderStitch(region, r, c, settings) {
 function ribStitch(region, r, c) {
     // horizontal rib (top/bottom borders)
     if (region === "topBorder" || region === "bottomBorder") {
-        return (c % 2 === 0) ? "K" : "P";
+        return (r % 2 === 0) ? "K" : "P";
     }
     // vertical rib (left/right borders)
     if (region === "leftBorder" || region === "rightBorder") {
