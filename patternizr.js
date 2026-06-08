@@ -348,6 +348,7 @@ function applyBorders(chart, settings) {
     // 2. build + apply borders
     const regions = buildBorderRegions(newRows, newCols, w, settings);
     for (const region of regions) {
+        console.log(`Applying region: ${region.regionName} (rows ${region.startRow}-${region.endRow}, cols ${region.startCol}-${region.endCol})`);
         fillRegion(result, settings, region);
     }
 

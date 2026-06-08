@@ -3,14 +3,14 @@ const BORDER_SPECS = [
         name: "topBorder",
         enabledKey: "borderTop",
         startRow: (rows, cols, w) => 0,
-        endRow: (rows, cols, w) => w,
+        endRow: (rows, cols, w) => rows,
         startCol: (rows, cols, w) => 0,
         endCol: (rows, cols, w) => cols
     },
     {
         name: "bottomBorder",
         enabledKey: "borderBottom",
-        startRow: (rows, cols, w) => rows - w,
+        startRow: (rows, cols, w) => rows,
         endRow: (rows, cols, w) => rows,
         startCol: (rows, cols, w) => 0,
         endCol: (rows, cols, w) => cols
