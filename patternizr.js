@@ -324,7 +324,7 @@ function buildBorderRegions(rows, cols, w, settings) {
 function applyBorders(chart, settings) {
     if (!settings.borderEnabled) return chart;
 
-    const w = settings.borderWidth;
+    const w = parseInt(settings.borderWidth);
     const rows = chart.length;
     const cols = chart[0].length;
 
@@ -361,11 +361,9 @@ function splitRowByRegion(row) {
     let buffer = [];
 
     for (const cell of row) {
-        if(!cell){
-            console.log("Null cell found, defaulting to 'body'", cell);
-        }
-        if (!cell.region){
-            console.log("Cell without region found, defaulting to 'body'", cell);
+        if(!cell || !cell.region){
+            // console.log("Null cell found, defaulting to 'body'", cell);
+            continue;
         }
         if (cell.region !== currentRegion) {
             segments.push({
@@ -464,9 +462,9 @@ function drawTextToCanvas(ctx, text, paddingPx, transform) {
 
     ctx.fillText(text, 0, 0);
 
-    console.log("Text drawn to canvas:");
-    console.log({ canvasWidth: ctx.canvas.width, canvasHeight: ctx.canvas.height});
-    console.log(ctx.font);
+    // console.log("Text drawn to canvas:");
+    // console.log({ canvasWidth: ctx.canvas.width, canvasHeight: ctx.canvas.height});
+    // console.log(ctx.font);
 
     ctx.restore();
 }
