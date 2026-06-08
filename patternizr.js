@@ -14,13 +14,9 @@ const ORIENTATION = {
 const outputContainer = document.getElementById("outputContainer");
 outputContainer.classList.add("d-none");
 
-
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("generateBtn").addEventListener("click", generatePattern);
 });
-
-
-
 
 function renderColoredPattern(el, chart) {
     if (!chart || !chart.length) {
@@ -46,10 +42,6 @@ function renderColoredPattern(el, chart) {
             if (region === "bottomBorder") regionClass = " border-bottom";
 
             html += `<span class="${stitchClass}${regionClass}">${stitch}</span>`;
-        }
-
-        if (r === 0) {
-            console.log("Row length:", row.length);
         }
 
         html += `</div>`;
@@ -182,7 +174,7 @@ function determinePatternDimensions(glyphPxW, glyphPxH, wChoice, hChoice, warnin
 
     const stitchSizeX = glyphPxW / targetStitches;
     const stitchSizeY = glyphPxH / targetRows;
-
+ 
     const ratio = stitchSizeX / stitchSizeY;
     const percentStretch = Math.max(ratio, 1 / ratio) - 1;
 
@@ -197,7 +189,6 @@ function determinePatternDimensions(glyphPxW, glyphPxH, wChoice, hChoice, warnin
             warningEL.textContent = "";
         }
     }
-
     return {targetStitches, targetRows, stitchSizeX, stitchSizeY};
 }
 
@@ -262,37 +253,28 @@ function generatePattern() {
     }
     debugStep("bounds", { minX, minY, maxX, maxY });
 
-    
     glyphDimensions = getGlyphDimensions(maxX, minX, maxY, minY);
     debugStep("glyph dimensions", glyphDimensions);
 
     const dims = determinePatternDimensions(glyphDimensions.glyphPxW, glyphDimensions.glyphPxH, widthChoice, heightChoice, warningEL);
-    
     const glyph = buildCells(pixels, canvas.width, canvas.height, minX, minY, maxX, maxY, dims.targetRows, dims.targetStitches);
-
     debugStep("cells built");
-
-    console.log("Glyph cells:");
-    console.log(glyph.cells.map(row => row.map(v => v ? "#" : ".").join("")).join("\n"));
 
     const chart = addBuffer(buildChart(glyph.cells, invert), 2);
     debugStep("chart built");
 
     const borderEnable = document.getElementById("borderEnable");
     const borderSelected = document.querySelectorAll('.border-sides');
-
     const borderControls = document.querySelectorAll('.border-settings');
 
     const selectedValues = Object.fromEntries(
         Array.from(borderSelected).map(cb => [cb.name || cb.id, cb.value === 'on' ? true : false])
     );
-
     const borderSettings = Object.fromEntries(
         Array.from(borderControls).map(select => [select.name || select.id, select.value])
     );
 
     const borderOpts = {...selectedValues, ...borderSettings, borderEnabled: borderEnable.checked};
-
     const chartWithBorders = applyBorders(chart, borderOpts);
     debugStep("borders applied");
 
@@ -408,37 +390,33 @@ function ribStitch(region, r, c) {
     if (region === "leftBorder" || region === "rightBorder") {
         return (r % 2 === 0) ? "K" : "P";
     }
-
     return "K";
 }
 
-function readSettings() {
-    const widthChoice = document.getElementById("widthPreset").value;
-    const heightChoice = document.getElementById("heightPreset").value;
-    const orientation = document.getElementById("orientation")?.value || "horizontal";
+// function readSettings() {
+//     const widthChoice = document.getElementById("widthPreset").value;
+//     const heightChoice = document.getElementById("heightPreset").value;
+//     const orientation = document.getElementById("orientation")?.value || "horizontal";
     
-    return {
-        text: document.getElementById("wordInput").value.trim().toUpperCase(),
-        orientation: "horizontal", // default
-        invert: document.getElementById("invertToggle").checked,
-        width: PRESETS[widthChoice] || 30,
-        height: PRESETS[heightChoice] || 30,
-        borderEnabled: document.getElementById("borderEnable")?.checked ?? true,
-        borderWidth: parseInt(document.getElementById("borderWidth")?.value || "5"),
-        borderTop: document.getElementById("borderTop")?.checked ?? true,
-        borderBottom: document.getElementById("borderBottom")?.checked ?? true,
-        borderLeft: document.getElementById("borderLeft")?.checked ?? true,
-        borderRight: document.getElementById("borderRight")?.checked ?? true,
-        borderPattern: document.getElementById("borderPattern")?.value || "rib",
-    };
-}
+//     return {
+//         text: document.getElementById("wordInput").value.trim().toUpperCase(),
+//         orientation: "horizontal", // default
+//         invert: document.getElementById("invertToggle").checked,
+//         width: PRESETS[widthChoice] || 30,
+//         height: PRESETS[heightChoice] || 30,
+//         borderEnabled: document.getElementById("borderEnable")?.checked ?? true,
+//         borderWidth: parseInt(document.getElementById("borderWidth")?.value || "5"),
+//         borderTop: document.getElementById("borderTop")?.checked ?? true,
+//         borderBottom: document.getElementById("borderBottom")?.checked ?? true,
+//         borderLeft: document.getElementById("borderLeft")?.checked ?? true,
+//         borderRight: document.getElementById("borderRight")?.checked ?? true,
+//         borderPattern: document.getElementById("borderPattern")?.value || "rib",
+//     };
+// }
 
-function normalizeOrientationSettings(settings) {
-    return { ...settings,  orientation: settings.orientation || ORIENTATION.HORIZONTAL};
-}
+
 
 function getCanvasTransform(orientation, baseFontPx) {
-
     if (orientation === ORIENTATION.HORIZONTAL) {
         return {rotate: 0, translateX: 0, translateY: 0, swapDimensions: false};
     }
@@ -449,7 +427,6 @@ function computeCanvasDimensions(textPxW, textPxH, paddingPx, transform) {
     if (!transform.swapDimensions) {
         return {width: textPxW + paddingPx * 2, height: textPxH + paddingPx * 2};
     }
-
     return {width: textPxH + paddingPx * 2, height: textPxW + paddingPx * 2};
 }
 
@@ -470,83 +447,6 @@ function drawTextToCanvas(ctx, text, paddingPx, transform) {
 
     ctx.fillText(text, 0, 0);
     ctx.restore();
-}
-
-function isVerticalOrientation(settings) {
-    return settings.orientation === ORIENTATION.VERTICAL;
-}
-
-
-function prepareText(text, orientation) {
-    if (orientation === "vertical") { return text.split("").join("\n")}
-    return text;
-}
-
-function rasterizeText(text) {
-    const canvas = document.getElementById("hiddenCanvas");
-    const ctx = canvas.getContext("2d");
-    const fontSize = 200;
-    const padding = 20;
-    const lineHeight = fontSize * 1.2;
-
-    ctx.font = `bold ${fontSize}px monospace`;
-    const lines = text.split("\n");
-    const maxWidth = Math.max(...lines.map(line => ctx.measureText(line).width));
-    canvas.width = Math.ceil(maxWidth + padding * 2);
-    canvas.height = Math.ceil(lines.length * lineHeight + padding * 2);
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "black";
-    ctx.font = `bold ${fontSize}px monospace`;
-    ctx.textBaseline = "top";
-    lines.forEach((line, index) => {ctx.fillText(line, padding, padding + (index * lineHeight));});
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-    return {pixels: imageData.data, width: canvas.width, height: canvas.height};
-}
-
-function findGlyphBounds(raster) {
-    const pixels = raster.pixels;
-    let minX = raster.width;
-    let minY = raster.height;
-    let maxX = 0;
-    let maxY = 0;
-
-    for (let y = 0; y < raster.height; y++) {
-        for (let x = 0; x < raster.width; x++) {
-            const idx = (y * raster.width + x) * 4;
-            const brightness = (pixels[idx] + pixels[idx + 1] + pixels[idx + 2]) / 3;
-            if (brightness < 240) {
-                minX = Math.min(minX, x);
-                minY = Math.min(minY, y);
-                maxX = Math.max(maxX, x);
-                maxY = Math.max(maxY, y);
-            }
-        }
-    }
-    if (minX > maxX || minY > maxY) { return null; }
-
-    return { minX, minY, maxX, maxY, width: maxX - minX + 1, height: maxY - minY + 1};
-}
-
-function sampleToGrid(raster, bounds, targetWidth, targetHeight) {
-    const cells = Array.from({ length: targetHeight },() => new Array(targetWidth).fill(false));
-    for (let row = 0; row < targetHeight; row++) {
-        for (let col = 0; col < targetWidth; col++) {
-            const x = bounds.minX + Math.floor((col / targetWidth) * bounds.width);
-            const y = bounds.minY + Math.floor((row / targetHeight) * bounds.height);
-            const idx = (y * raster.width + x) * 4;
-            const brightness = (raster.pixels[idx] + raster.pixels[idx + 1] + raster.pixels[idx + 2]) / 3;
-            cells[row][col] = brightness < 200;
-        }
-    }
-    return cells;
-}
-
-function cellsToChart(cells, invert) {
-    return cells.map(row =>
-        row.map(bit => ({stitch: bit ? (invert ? "K" : "P") : (invert ? "P" : "K"), region: "body"}))
-    );
 }
 
 function formatRegion(region, compressed) {
@@ -575,7 +475,6 @@ function buildInstructions(chart) {
         const lines = [];
         for (const seg of segments) {
             const compressed = compressStitches(seg.stitches);
-
             if (seg.region === "body") { lines.push(`Body(${compressed})`); }
             lines.push(formatRegion(seg.region, compressed));
 
@@ -591,22 +490,6 @@ function buildInstructions(chart) {
     });
 
     return instructions;
-}
-
-function compressRow(row) {
-    const result = [];
-    let current = row[0];
-    let count = 1;
-    for (let i = 1; i < row.length; i++) {
-        if (row[i] === current) { count++; }
-        else {
-            result.push(`${current}${count}`);
-            current = row[i];
-            count = 1;
-        }
-    }
-    result.push(`${current}${count}`)
-    return result.join(", ");
 }
 
 function compressStitches(stitches) {
@@ -628,37 +511,4 @@ function compressStitches(stitches) {
 
     result.push(`${current}${count}`);
     return result.join(", ");
-}
-
-function renderInstructions(container, instructions) {
-    container.innerHTML = instructions.join("<br>");
-}
-
-function renderPattern(container, chart) {
-    container.innerHTML = "";
-    chart.forEach((row, rowIndex) => {
-
-        const rowDiv = document.createElement("div");
-        rowDiv.className = "pattern-row";
-
-        const chip = document.createElement("span");
-        chip.className = `row-chip ${rowIndex % 2 === 0 ? "chip-rs" : "chip-ws"}`;
-
-        rowDiv.appendChild(chip);
-
-        const label = document.createElement("span");
-        label.className = "rowlabel";
-        label.textContent = `Row ${rowIndex + 1}: `;
-        rowDiv.appendChild(label);
-
-        row.forEach(cell => {
-            const span = document.createElement("span");
-            span.className = cell.stitch === "K" ? "k" : "p";
-            span.textContent = cell.stitch;
-            if (cell.region === "border") { span.style.opacity = "0.5"; }
-            rowDiv.appendChild(span);
-        });
-
-        container.appendChild(rowDiv);
-    });
 }
