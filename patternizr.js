@@ -1,9 +1,16 @@
 const PRESETS = {
-    small: 20,
-    medium: 30,
-    large: 40,
-    xlarge: 60
+    small: { width: 20, height: 12 },
+    medium: { width: 30, height: 18 },
+    large: { width: 40, height: 24 },
+    xlarge: { width: 60, height: 36 }
 };
+
+// const PRESETS = {
+//     small: { width: 20, height: 20 },
+//     medium: { width: 30, height: 30 },
+//     large: { width: 40, height: 40 },
+//     xlarge: { width: 60, height: 60 }
+// };
 
 
 const ORIENTATION = {
@@ -17,6 +24,75 @@ outputContainer.classList.add("d-none");
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("generateBtn").addEventListener("click", generatePattern);
 });
+
+function getInputSettings() {
+    widthChoice = document.getElementById("widthPreset").value;
+    heightChoice = document.getElementById("heightPreset").value;
+
+    settingsObj = {
+        text: document.getElementById("wordInput").value.trim().toUpperCase(),
+        orientation: document.getElementById("orientation")?.value || "horizontal",
+        invert: !!document.getElementById("invertToggle").checked,
+        width: widthChoice || "medium",
+        height: heightChoice || "medium"
+    };
+    return settingsObj;
+}
+
+function getElementSettings(){
+    elementSettingsObj = {
+        warningEL: document.getElementById("warning"),
+        instructionsEL: document.getElementById("instructions"),
+        patternEL: document.getElementById("patternOutput"),
+        notesEL: document.getElementById("notes")
+    }
+    return elementSettingsObj;
+}
+
+function getBorderSettings() {
+    const borderSettings = {
+        borderEnabled: document.getElementById("borderEnable")?.checked ,
+        borderWidth: parseInt(document.getElementById("borderWidth")?.value || "5"),
+        borderTop: document.getElementById("borderTop")?.checked ?? true,
+        borderBottom: document.getElementById("borderBottom")?.checked ?? true,
+        borderLeft: document.getElementById("borderLeft")?.checked ?? true,
+        borderRight: document.getElementById("borderRight")?.checked ?? true,
+        borderPattern: document.getElementById("borderPattern")?.value || "rib",
+        borderSelected: document.querySelectorAll('.border-sides'),
+        borderControls: document.querySelectorAll('.border-settings')
+    };
+    return borderSettings;
+}
+
+function transposeCells(cells) {
+    const rows = cells.length;
+    const cols = cells[0].length;
+
+    const result = Array.from(
+        { length: cols },
+        () => Array(rows)
+    );
+
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            result[c][r] = cells[r][c];
+        }
+    }
+
+    return result;
+}
+
+function logCells(cells, label = "cells") {
+    console.log(`=== ${label} ===`);
+
+    const output = cells
+        .map(row =>
+            row.map(cell => cell ? "#" : ".").join("")
+        )
+        .join("\n");
+
+    console.log(output);
+}
 
 function renderColoredPattern(el, chart) {
     if (!chart || !chart.length) {
@@ -32,7 +108,6 @@ function renderColoredPattern(el, chart) {
             const cell = row[c];
             const stitch = cell?.stitch ?? "K";
             const region = cell?.region ?? "body";
-
             const stitchClass = stitch === "K" ? "k" : "p";
 
             let regionClass = "";
@@ -43,7 +118,6 @@ function renderColoredPattern(el, chart) {
 
             html += `<span class="${stitchClass}${regionClass}">${stitch}</span>`;
         }
-
         html += `</div>`;
     }
     return html;
@@ -55,22 +129,12 @@ function debugStep(name, data) {
 
 function validateInput(text, warningEL, instructionsEL) {
     if (!text) {
+        warningEL.style.display = "block";
+        warningEL.textContent = "Input cannot be empty.";
         instructionsEL.innerHTML = "<li>Please enter text to generate a pattern.</li>";
+        outputContainer.classList.remove("d-none");
         return false;
     }
-
-    // if (text === "MAGA") {
-    //     warningEL.style.display = "block";
-    //     warningEL.textContent = "No. Fuck you.";
-    //     return false;
-    // }
-
-    // const dirtyWords = ["ASS", "FUCK", "DAMN", "SHIT", "BALLS"];
-    // if (dirtyWords.includes(text)) {
-    //     warningEL.style.display = "block";
-    //     warningEL.textContent = "What are you, thirteen? Fine, whatever.";
-    // }
-
     return true;
 }
 
@@ -98,7 +162,7 @@ function rasterize(ctx2, canvasW, canvasH) {
     return img.data;
 }
 
-function buildCells(pixels, canvasW, canvasH, minX, minY, maxX, maxY, targetRows,targetStitches) {
+function buildCells(pixels, canvas, minX, minY, maxX, maxY, targetRows, targetStitches) {
     const glyphPxW = maxX - minX + 1;
     const glyphPxH = maxY - minY + 1;
 
@@ -116,11 +180,7 @@ function buildCells(pixels, canvasW, canvasH, minX, minY, maxX, maxY, targetRows
 
             for (let y = y0; y < y1; y++) {
                 for (let x = x0; x < x1; x++) {
-                    const idx = (y * canvasW + x) * 4;
-                    const rpx = pixels[idx];
-                    const gpx = pixels[idx + 1];
-                    const bpx = pixels[idx + 2];
-                    sum += (rpx + gpx + bpx) / 3;
+                    sum += getPixels(x, y, pixels, canvas);
                     count++;
                 }
             }
@@ -131,6 +191,15 @@ function buildCells(pixels, canvasW, canvasH, minX, minY, maxX, maxY, targetRows
     return { cells, glyphPxW, glyphPxH };
 }
 
+function getPixels(x, y, pixels, canvas){
+    const idx = (y * canvas.width + x) * 4;
+    const r = pixels[idx];
+    const g = pixels[idx + 1];
+    const b = pixels[idx + 2];
+    const sum = (r + g + b) / 3;
+    return sum;
+
+}
 
 function buildChart(cells, invert) {
     const stitchFor = (bit) => bit ? (invert ? "K" : "P") : (invert ? "P" : "K");
@@ -155,25 +224,24 @@ function renderPipeline(chart, el) {
     el.innerHTML = renderColoredPattern(el, chart);
 }
 
-
-function determinePatternDimensions(glyphPxW, glyphPxH, wChoice, hChoice, warningEL) {
+function determinePatternDimensions(glyph, wChoice, hChoice, warningEL) {
     let targetStitches = wChoice && PRESETS[wChoice] ? PRESETS[wChoice].width : null;
     let targetRows = hChoice && PRESETS[hChoice] ? PRESETS[hChoice].height : null;
     const defaultStitches = 30;
-    const defaultRows = Math.round((glyphPxH / glyphPxW) * defaultStitches) || 15;
+    const defaultRows = Math.round((glyph.glyphPxH / glyph.glyphPxW) * defaultStitches) || 15;
     if (!targetStitches && !targetRows) {
         targetStitches = defaultStitches;
         targetRows = defaultRows;
     } else if (targetStitches && !targetRows) {
-        const stitchSizePx = glyphPxW / targetStitches;
-        targetRows = Math.max(1, Math.round(glyphPxH / stitchSizePx));
+        const stitchSizePx = glyph.glyphPxW / targetStitches;
+        targetRows = Math.max(1, Math.round(glyph.glyphPxH / stitchSizePx));
     } else if (!targetStitches && targetRows) {
-        const rowSizePx = glyphPxH / targetRows;
-        targetStitches = Math.max(1, Math.round(glyphPxW / rowSizePx));
+        const rowSizePx = glyph.glyphPxH / targetRows;
+        targetStitches = Math.max(1, Math.round(glyph.glyphPxW / rowSizePx));
     }
 
-    const stitchSizeX = glyphPxW / targetStitches;
-    const stitchSizeY = glyphPxH / targetRows;
+    const stitchSizeX = glyph.glyphPxW / targetStitches;
+    const stitchSizeY = glyph.glyphPxH / targetRows;
  
     const ratio = stitchSizeX / stitchSizeY;
     const percentStretch = Math.max(ratio, 1 / ratio) - 1;
@@ -198,51 +266,11 @@ function getGlyphDimensions(maxX, minX, maxY, minY) {
     return {'glyphPxW': glyphPxW, 'glyphPxH': glyphPxH};
 }
 
-
-function generatePattern() {
-    debugStep("start");
-
-    const text = (document.getElementById("wordInput").value || "").trim().toUpperCase();
-    const widthChoice = document.getElementById("widthPreset").value;
-    const heightChoice = document.getElementById("heightPreset").value;
-    const invert = !!document.getElementById("invertToggle").checked;
-    const orientation = document.getElementById("orientation")?.value || "horizontal";
-
-    const warningEL = document.getElementById("warning");
-    const instructionsEL = document.getElementById("instructions");
-    const patternEL = document.getElementById("patternOutput");
-    const notesEL = document.getElementById("notes");
-
-    warningEL.style.display = "none";
-    warningEL.textContent = "";
-
-    instructionsEL.innerHTML = "";
-    patternEL.innerHTML = "";
-    notesEL.textContent = "";
-
-    if (!validateInput(text, warningEL, instructionsEL)) {
-        debugStep("validation failed");
-        return;
-    }
-
-    const canvas = document.getElementById("hiddenCanvas");
-    const ctx = canvas.getContext("2d");
-    const baseFontPx = 200;
-
-    const { ctx2 } = buildCanvas(ctx, canvas, text, baseFontPx, orientation);
-    debugStep("canvas built");
-
-    const pixels = rasterize(ctx2, canvas.width, canvas.height);
-    debugStep("rasterized");
-
+function getXYBounds(canvas, pixels){
     let minX = canvas.width, minY = canvas.height, maxX = 0, maxY = 0;
     for (let y = 0; y < canvas.height; y++) {
         for (let x = 0; x < canvas.width; x++) {
-            const idx = (y * canvas.width + x) * 4;
-            const r = pixels[idx];
-            const g = pixels[idx + 1];
-            const b = pixels[idx + 2];
-            const brightness = (r + g + b) / 3;
+            const brightness = getPixels(x, y, pixels, canvas);
             if (brightness < 240) {
                 minX = Math.min(minX, x);
                 minY = Math.min(minY, y);
@@ -251,40 +279,57 @@ function generatePattern() {
             }
         }
     }
-    debugStep("bounds", { minX, minY, maxX, maxY });
+    return {minX, minY, maxX, maxY};
+}
 
-    glyphDimensions = getGlyphDimensions(maxX, minX, maxY, minY);
-    debugStep("glyph dimensions", glyphDimensions);
+function doReset(el){
+    el.warningEL.style.display = "none";
+    el.warningEL.textContent = "";
+    el.instructionsEL.innerHTML = "";
+    el.patternEL.innerHTML = "";
+    el.notesEL.textContent = "";
+}
 
-    const dims = determinePatternDimensions(glyphDimensions.glyphPxW, glyphDimensions.glyphPxH, widthChoice, heightChoice, warningEL);
-    const glyph = buildCells(pixels, canvas.width, canvas.height, minX, minY, maxX, maxY, dims.targetRows, dims.targetStitches);
-    debugStep("cells built");
+function generatePattern() {
+    const inp = getInputSettings();
+    const el = getElementSettings();
+    const bs = getBorderSettings();
 
-    const chart = addBuffer(buildChart(glyph.cells, invert), 2);
-    debugStep("chart built");
+    doReset(el);
+    if (!validateInput(inp.text, el.warningEL, el.instructionsEL)) return;
+    
 
-    const borderEnable = document.getElementById("borderEnable");
-    const borderSelected = document.querySelectorAll('.border-sides');
-    const borderControls = document.querySelectorAll('.border-settings');
+    const canvas = document.getElementById("hiddenCanvas");
+    const ctx = canvas.getContext("2d");
+    const baseFontPx = 200;
+
+    const { ctx2 } = buildCanvas(ctx, canvas, inp.text, baseFontPx, inp.orientation);
+    const pixels = rasterize(ctx2, canvas.width, canvas.height);
+
+    const { maxX, minX, maxY, minY } = getXYBounds(canvas, pixels);
+
+    const glyphDimensions = getGlyphDimensions(maxX, minX, maxY, minY);
+    const dims = determinePatternDimensions(glyphDimensions, inp.width, inp.height, el.warningEL);
+    const glyph = buildCells(pixels, canvas, minX, minY, maxX, maxY, dims.targetRows, dims.targetStitches);
+
+    const chart = addBuffer(buildChart(glyph.cells, inp.invert), 2);
 
     const selectedValues = Object.fromEntries(
-        Array.from(borderSelected).map(cb => [cb.name || cb.id, cb.value === 'on' ? true : false])
+        Array.from(bs.borderSelected).map(cb => [cb.name || cb.id, cb.value === 'on' ? true : false])
     );
     const borderSettings = Object.fromEntries(
-        Array.from(borderControls).map(select => [select.name || select.id, select.value])
+        Array.from(bs.borderControls).map(select => [select.name || select.id, select.value])
     );
 
-    const borderOpts = {...selectedValues, ...borderSettings, borderEnabled: borderEnable.checked};
+    const borderOpts = {...selectedValues, ...borderSettings, borderEnabled: bs.borderEnabled};
     const chartWithBorders = applyBorders(chart, borderOpts);
-    debugStep("borders applied");
 
     const instructions = buildInstructions(chartWithBorders);
     instructions.push("<strong>Bind off all stitches, you're done!</strong>");
-    instructionsEL.innerHTML = instructions.join("<br>");
-    renderPipeline(chartWithBorders, patternEL);
-    debugStep("render complete");
+    el.instructionsEL.innerHTML = instructions.join("<br>");
+    renderPipeline(chartWithBorders, el.patternEL);
 
-    notesEL.textContent = "Pattern generated successfully.";
+    el.notesEL.textContent = "Pattern generated successfully.";
     outputContainer.classList.remove("d-none");
 }
 
@@ -341,37 +386,38 @@ function applyBorders(chart, settings) {
 
     const regions = buildBorderRegions(newRows, newCols, w, settings);
     for (const region of regions) {
-        console.log(`Applying region: ${region.regionName} (rows ${region.startRow}-${region.endRow}, cols ${region.startCol}-${region.endCol})`);
         fillRegion(result, settings, region);
     }
 
     return result;
 }
 
+function getChartColumn(chart, columnIndex) {
+    return chart.map(row => row[columnIndex]);
+}
 
-function splitRowByRegion(row) {
+function splitRowByRegion(cells) {
+    if (!cells.length) return [];
     const segments = [];
-    let currentRegion = row[0].region;
+    let currentRegion = cells[0].region;
     let buffer = [];
-
-    for (const cell of row) {
-        if(!cell || !cell.region){
-            continue;
-        }
-        if (cell.region !== currentRegion) {
+    for (const cell of cells) {
+        if (!cell) continue;
+        const region = cell.region || "body";
+        if (region !== currentRegion) {
             segments.push({
                 region: currentRegion,
-                stitches: buffer
+                stitches: [...buffer]
             });
             buffer = [];
-            currentRegion = cell.region;
+            currentRegion = region;
         }
         buffer.push(cell.stitch);
     }
 
     segments.push({
         region: currentRegion,
-        stitches: buffer
+        stitches: [...buffer]
     });
 
     return segments;
@@ -392,29 +438,6 @@ function ribStitch(region, r, c) {
     }
     return "K";
 }
-
-// function readSettings() {
-//     const widthChoice = document.getElementById("widthPreset").value;
-//     const heightChoice = document.getElementById("heightPreset").value;
-//     const orientation = document.getElementById("orientation")?.value || "horizontal";
-    
-//     return {
-//         text: document.getElementById("wordInput").value.trim().toUpperCase(),
-//         orientation: "horizontal", // default
-//         invert: document.getElementById("invertToggle").checked,
-//         width: PRESETS[widthChoice] || 30,
-//         height: PRESETS[heightChoice] || 30,
-//         borderEnabled: document.getElementById("borderEnable")?.checked ?? true,
-//         borderWidth: parseInt(document.getElementById("borderWidth")?.value || "5"),
-//         borderTop: document.getElementById("borderTop")?.checked ?? true,
-//         borderBottom: document.getElementById("borderBottom")?.checked ?? true,
-//         borderLeft: document.getElementById("borderLeft")?.checked ?? true,
-//         borderRight: document.getElementById("borderRight")?.checked ?? true,
-//         borderPattern: document.getElementById("borderPattern")?.value || "rib",
-//     };
-// }
-
-
 
 function getCanvasTransform(orientation, baseFontPx) {
     if (orientation === ORIENTATION.HORIZONTAL) {
@@ -468,26 +491,25 @@ function formatRegion(region, compressed) {
 
 function buildInstructions(chart) {
     const instructions = [];
-    instructions.push(`<strong>Cast on ${chart[0].length} stitches.</strong>`);
-
-    chart.forEach((row, rowIndex) => {
-        const segments = splitRowByRegion(row);
+    instructions.push(`<strong>Cast on ${chart.length} stitches.</strong>`);
+    for (let col = 0; col < chart[0].length; col++) {
+        const knittingRow = getChartColumn(chart, col);
+        const segments = splitRowByRegion(knittingRow);
         const lines = [];
         for (const seg of segments) {
             const compressed = compressStitches(seg.stitches);
-            if (seg.region === "body") { lines.push(`Body(${compressed})`); }
-            lines.push(formatRegion(seg.region, compressed));
-
-            if (seg.region === "border") {
-                lines.push(`Border(${compressed})`);
+            if (seg.region === "body") {
+                lines.push(`Body(${compressed})`);
+            } else {
+                lines.push(formatRegion(seg.region, compressed));
             }
         }
 
         instructions.push(
-            `<strong>Row ${rowIndex + 1}:</strong><br>` +
+            `<strong>Row ${col + 1}:</strong><br>` +
             lines.map(l => `&nbsp;&nbsp;${l}`).join("<br>")
         );
-    });
+    }
 
     return instructions;
 }
@@ -498,7 +520,6 @@ function compressStitches(stitches) {
     let result = [];
     let current = stitches[0];
     let count = 1;
-
     for (let i = 1; i < stitches.length; i++) {
         if (stitches[i] === current) {
             count++;
@@ -508,7 +529,6 @@ function compressStitches(stitches) {
             count = 1;
         }
     }
-
     result.push(`${current}${count}`);
     return result.join(", ");
 }
