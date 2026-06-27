@@ -26,11 +26,16 @@ body {
   margin-bottom: 12px;
 }
 
-/* .form-select {
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.form-select {
     border: var(--border-thickness) solid #000;
     border-radius: 10px;
     box-shadow: var(--shadow-offset) var(--shadow-offset) 0 #000;
-} */
+}
 
 .controls {
   display: flex;
