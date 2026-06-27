@@ -11,20 +11,13 @@ function splitRowByRegion(cells) {
         if (!cell) continue;
         const region = cell.region || "body";
         if (region !== currentRegion) {
-            segments.push({
-                region: currentRegion,
-                stitches: [...buffer]
-            });
+            segments.push({region: currentRegion, stitches: [...buffer]});
             buffer = [];
             currentRegion = region;
         }
         buffer.push(cell.stitch);
     }
-
-    segments.push({
-        region: currentRegion,
-        stitches: [...buffer]
-    });
+    segments.push({region: currentRegion, stitches: [...buffer]});
 
     return segments;
 }
@@ -80,11 +73,7 @@ function buildInstructions(chart) {
                 lines.push(formatRegion(seg.region, compressed));
             }
         }
-
-        instructions.push(
-            `<strong>Row ${col + 1}:</strong><br>` +
-            lines.map(l => `&nbsp;&nbsp;${l}`).join("<br>")
-        );
+        instructions.push(`<strong>Row ${col + 1}:</strong><br>` +  lines.map(l => `&nbsp;&nbsp;${l}`).join("<br>"));
     }
 
     return instructions;

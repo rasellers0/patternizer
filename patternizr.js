@@ -5,19 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("generateBtn").addEventListener("click", generatePattern);
 });
 
-// function transposeCells(cells) {
-//     const rows = cells.length;
-//     const cols = cells[0].length;
-//     const result = Array.from( { length: cols }, () => Array(rows));
-//     for (let r = 0; r < rows; r++) {
-//         for (let c = 0; c < cols; c++) {
-//             result[c][r] = cells[r][c];
-//         }
-//     }
-
-//     return result;
-// }
-
 function renderColoredPattern(el, chart) {
     if (!chart || !chart.length) {
         el.innerHTML = "";
@@ -62,19 +49,16 @@ function buildCanvas(ctx, canvas, text, baseFontPx, orientation) {
     const fontSpec = `bold ${baseFontPx}px monospace`;
     ctx.font = fontSpec;
     const paddingPx = 20;
-    // const transform = getCanvasTransform(orientation, baseFontPx);
     const metrics = ctx.measureText(text);
     let textPxW = Math.ceil(metrics.width);
     let textPxH = Math.ceil(baseFontPx * 1.2);
 
-    // const dims = computeCanvasDimensions(textPxW, textPxH, paddingPx, transform);
     const dims = computeCanvasDimensions(textPxW, textPxH, paddingPx, orientation, text.length);
 
     canvas.width = Math.max(10, dims.width);
     canvas.height = Math.max(10, dims.height);
     const ctx2 = canvas.getContext("2d");
     drawTextToCanvas(ctx2, text, paddingPx, orientation);
-    // drawTextToCanvas(ctx2, text, paddingPx, transform);
 
     return { ctx2, paddingPx };
 }
@@ -87,13 +71,6 @@ function rasterize(ctx2, canvasW, canvasH) {
 function buildCells(pixels, canvas, minX, minY, maxX, maxY, targetRows, targetStitches) {
     const glyphPxW = maxX - minX + 1;
     const glyphPxH = maxY - minY + 1;
-
-    console.log({
-        glyphPxW: glyphPxW,
-        glyphPxH: glyphPxH,
-        targetRows: targetRows,
-        targetStitches: targetStitches
-    });
 
     const threshold = 128;
     const cells = Array.from({ length: targetRows }, () => new Array(targetStitches).fill(false));
@@ -116,18 +93,7 @@ function buildCells(pixels, canvas, minX, minY, maxX, maxY, targetRows, targetSt
                     }
                 }
             }
-
             cells[r][c] = foundDark;
-
-            // for (let y = y0; y < y1; y++) {
-            //     for (let x = x0; x < x1; x++) {
-            //         sum += getPixels(x, y, pixels, canvas);
-            //         count++;
-            //     }
-            // }
-
-            // const avg = count ? sum / count : 255;
-            // cells[r][c] = avg < threshold;
         }
     }
     return { cells, glyphPxW, glyphPxH };
@@ -140,7 +106,6 @@ function getPixels(x, y, pixels, canvas){
     const b = pixels[idx + 2];
     const sum = (r + g + b) / 3;
     return sum;
-
 }
 
 function buildChart(cells, invert) {
@@ -196,14 +161,6 @@ function generatePattern() {
 
     const { maxX, minX, maxY, minY } = getXYBounds(canvas, pixels);
 
-    // const dims = determinePatternDimensions(maxX, minX, maxY, minY, inp, el.warningEL);
-    
-    // const t_rows = (inp.orientation === ORIENTATION.VERTICAL ? dims.targetStitches : dims.targetRows);
-    // const t_stitches = (inp.orientation === ORIENTATION.VERTICAL ? dims.targetRows : dims.targetStitches);
-
-    // const glyph = buildCells(pixels, canvas, minX, minY, maxX, maxY, t_rows, t_stitches);
-
-    // // const glyph = buildCells(pixels, canvas, minX, minY, maxX, maxY, dims.targetRows, dims.targetStitches);
 
     const dims = determinePatternDimensions(maxX, minX, maxY, minY, inp);
     const glyph = buildCells(pixels, canvas, minX, minY, maxX, maxY, dims.targetRows, dims.targetStitches);
@@ -232,13 +189,6 @@ function buildChartWithBorders(chart, bs){
     return chartWithBorders;
 }
 
-// function getCanvasTransform(orientation, baseFontPx) {
-//     if (orientation === ORIENTATION.HORIZONTAL) {
-//         return {rotate: 0, translateX: 0, translateY: 0, swapDimensions: false};
-//     }
-//     return {rotate: -Math.PI / 2, translateX: 0, translateY: 0, swapDimensions: true};
-// }
-
 function getCanvasTransform(orientation) {
     return {
         orientation
@@ -266,27 +216,6 @@ function drawTextToCanvas(ctx, text, paddingPx, orientation) {
     drawVerticalText(ctx, text, paddingPx, fontSize);
 
     ctx.restore();
-    debugCanvas(ctx);
-}
-
-function debugCanvas(ctx){
-    const url = ctx.canvas.toDataURL();
-    const img = new Image();
-    img.src = url;
-    document.body.appendChild(img);
-}
-
-function debugCanvasScaling(ctx) {
-    const canvas = ctx.canvas;
-
-    console.log("CSS size:");
-    console.log(canvas.clientWidth, canvas.clientHeight);
-
-    console.log("Bitmap size:");
-    console.log(canvas.width, canvas.height);
-
-    console.log("DevicePixelRatio:");
-    console.log(window.devicePixelRatio);
 }
 
 function drawVerticalText(ctx, text, paddingPx, fontSize) {
@@ -308,21 +237,18 @@ function drawVerticalText(ctx, text, paddingPx, fontSize) {
     glyphCtx.textBaseline = "top";
 
     let destX = paddingPx;
-    // let destY = paddingPx;
 
     for (const ch of text) {
         const glyph = buildGlyphBitmap(ch, ctx.font, fontSize);
         ctx.save();
 
         ctx.translate(destX, paddingPx + glyph.width);
-        // ctx.translate(paddingPx, destY + glyph.width);
 
         ctx.rotate(-Math.PI / 2);
         ctx.drawImage(glyph.canvas, 0, 0);
         ctx.restore();
 
         destX += glyph.height;
-        // destY += glyph.height;
     }
 }
 
@@ -351,112 +277,6 @@ function buildGlyphBitmap(ch, fontSpec, fontSize) {
 
     return {canvas, width: glyphWidth, height: glyphHeight};
 }
-
-// function drawVerticalText(ctx, text, x, fontSize) {
-//     debugCanvasScaling(ctx);
-
-//     ctx.textBaseline = "top";
-//     const advance = fontSize;
-//     let y = x;
-
-//     for (const ch of text) {
-//         ctx.save();
-//         ctx.translate(x, y);
-//         ctx.rotate(-Math.PI / 2);
-//         ctx.fillText(ch, 0, 0);
-
-//         ctx.restore();
-
-//         y += advance;
-//     }
-// }
-
-// function drawTextToCanvas(ctx, text, paddingPx, orientation) {
-//     ctx.save();
-
-//     const fontSize = 200;
-//     ctx.font = `bold ${fontSize}px monospace`;
-//     ctx.fillStyle = "white";
-//     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-//     ctx.fillStyle = "black";
-//     ctx.textBaseline = "alphabetic";
-
-//     if (orientation === ORIENTATION.HORIZONTAL) {
-//         ctx.fillText(text, paddingPx, paddingPx);
-//         ctx.restore();
-//         return;
-//     }
-//     ctx = drawVerticalText(paddingPx, text, ctx, fontSize);
-//     ctx.restore();
-// }
-
-// function drawVerticalText(paddingPx, text, ctx, fontSize ){
-//     let x = paddingPx;
-//     for (const ch of text) {
-//         const m = ctx.measureText(ch);
-//         const ascent = m.actualBoundingBoxAscent ?? fontSize * 0.8;
-//         const descent = m.actualBoundingBoxDescent ?? fontSize * 0.2;
-//         const charHeight = ascent + descent;
-//         ctx.save();
-
-//         ctx.translate(x, paddingPx + ascent);
-//         ctx.rotate(-Math.PI / 2);
-//         ctx.fillText(ch, 0, 0);
-
-//         ctx.restore();
-//         const advance = m.width ?? fontSize * 0.9;
-//         x += advance;
-//     }
-//     return ctx
-// }
-
-// function drawTextToCanvas(ctx, text, paddingPx, orientation) {
-//     ctx.save();
-//     const baseFontPx = 200;
-//     const fontSpec = `bold ${baseFontPx}px monospace`;
-//     ctx.font = fontSpec;
-//     ctx.fillStyle = "white";
-//     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-//     ctx.fillStyle = "black";
-//     ctx.textBaseline = "top";
-
-//     if (orientation === ORIENTATION.HORIZONTAL) {
-//         ctx.fillText(text, paddingPx, paddingPx);
-//     } else {
-//         const charMetrics = ctx.measureText("M");
-//         const charAdvance = Math.ceil(baseFontPx * 0.9);
-//         let x = paddingPx;
-//         for (const ch of text) {
-//             ctx.save();
-//             ctx.translate(x, paddingPx + baseFontPx);
-//             ctx.rotate(-Math.PI / 2);
-//             ctx.fillText(ch, 0, 0);
-//             ctx.restore();
-//             // x += charAdvance;
-//             x += ctx.measureText(ch).width;
-//         }
-//     }
-//     ctx.restore();
-// }
-
-// function drawTextToCanvas(ctx, text, paddingPx, transform) {
-//     ctx.save();
-
-//     const baseFontPx = 200;
-//     const fontSpec = `bold ${baseFontPx}px monospace`;
-//     ctx.font = fontSpec;
-
-//     ctx.fillStyle = "white";
-//     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-//     ctx.fillStyle = "black";
-//     ctx.textBaseline = "top";
-//     ctx.translate(paddingPx, paddingPx);
-
-//     if (transform.rotate !== 0) {ctx.rotate(transform.rotate);}
-
-//     ctx.fillText(text, 0, 0);
-//     ctx.restore();
-// }
 
 function formatRegion(region, compressed) {
     switch (region) {
