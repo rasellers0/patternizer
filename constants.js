@@ -32,3 +32,20 @@ const BORDER_SPECS = [
         endCol: (rows, cols, w) => cols
     }
 ];
+
+const PRESETS = {
+    small: { width: 20, height: 12 },
+    medium: { width: 30, height: 18 },
+    large: { width: 40, height: 24 },
+    xlarge: { width: 60, height: 36 }
+};
+
+const SIZE_PRESETS = {
+    "horizontal": {AUTO: 30, XS: 20, S: 30, M: 45, L: 60, XL: 90},
+    "vertical": {AUTO: 60, XS: 45, S: 60, M: 90, L: 105, XL: 120},
+};
+
+const ORIENTATION = {
+    HORIZONTAL: "horizontal",
+    VERTICAL: "vertical"
+};
