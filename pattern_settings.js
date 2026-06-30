@@ -3,7 +3,7 @@ function getInputSettings() {
         text: document.getElementById("wordInput").value.trim().toUpperCase(),
         orientation: document.getElementById("orientation")?.value || "horizontal",
         invert: !!document.getElementById("invertToggle").checked,
-        size: document.getElementById("sizeChoice").value
+        size: document.getElementById("sizeChoice").value,
     };
 }
 
@@ -12,7 +12,9 @@ function getElementSettings(){
         warningEL: document.getElementById("warning"),
         instructionsEL: document.getElementById("instructions"),
         patternEL: document.getElementById("patternOutput"),
-        notesEL: document.getElementById("notes")
+        notesEL: document.getElementById("notes"),
+        borderOptsEL: document.getElementById("borderPattern"),
+        borderWidthEL: document.getElementById("borderWidth")
     }
     return elementSettingsObj;
 }

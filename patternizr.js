@@ -1,9 +1,47 @@
 const outputContainer = document.getElementById("outputContainer");
 outputContainer.classList.add("d-none");
 
+
+
 document.addEventListener("DOMContentLoaded", () => {
+    populateBorderStitchOptions()
+    const borderOptsEL = document.querySelector('#borderPattern');
+    borderOptsEL.dispatchEvent(new Event('change'));
     document.getElementById("generateBtn").addEventListener("click", generatePattern);
 });
+
+const borderOptsEL = document.querySelector('#borderPattern');
+
+borderOptsEL.addEventListener('change', function(event) {
+    const selectedValue = this.value; 
+    populateBorderWidths(selectedValue)
+});
+
+function populateBorderStitchOptions(){
+    const es = getElementSettings();
+    let opts = ""
+    for(key in BORDER_PATTERN_DEFS){
+        pat = BORDER_PATTERN_DEFS[key]
+        selected = pat.optValue === 'rib1x1' ? 'selected': ''
+        opts += `<option value="${pat.optValue}" ${selected}>${pat.label}</option>` ;
+    }
+    es.borderOptsEL.innerHTML = opts;
+}
+
+function populateBorderWidths(border){
+    if(border == "" || border == undefined){
+        return;
+    }
+     
+    const es = getElementSettings();
+    widths = ""
+    selectedBorder = BORDER_PATTERN_DEFS[border];
+    for(val of selectedBorder.allowedWidths){
+        selected = (val === selectedBorder.defaultWidth) ? 'selected' : ''
+        widths += `<option value="${val}" ${selected}>${val}</option>`;
+    }
+    es.borderWidthEL.innerHTML = widths;
+}
 
 function renderColoredPattern(el, chart) {
     if (!chart || !chart.length) {

@@ -49,3 +49,52 @@ const ORIENTATION = {
     HORIZONTAL: "horizontal",
     VERTICAL: "vertical"
 };
+
+const BORDER_PATTERN_DEFS = {
+    garter: {
+        label: "Garter",
+        optValue: "garter",
+        function: "garterStitch",
+        repeat: {width: 1, height: 1},
+        minimum: {width: 1, height: 1},
+        allowedWidths: [1,2,3,4,5,6,7,8],
+        defaultWidth: 5
+    },
+    stockinette: {
+        label: "Stockinette",
+        optValue: "stockinette",
+        function: "stockinetteStitch",
+        repeat: {width: 1, height: 2},
+        minimum: {width: 1, height: 2},
+        allowedWidths: [1,2,3,4,5,6,7,8],
+        defaultWidth: 5
+    },
+    rib1x1: {
+        label: "1×1 Rib",
+        optValue: "rib1x1",
+        function: "rib1x1Stitch",
+        repeat: {width: 2, height: 1},
+        minimum: {width: 2, height: 1},
+        allowedWidths: [2,4,6,8],
+        defaultWidth: 6
+    },
+    rib2x2: {
+        label: "2×2 Rib",
+        optValue: "rib2x2",
+        function: "rib2x2Stitch",
+        repeat: {width: 4, height: 1},
+        minimum: {width: 4, height: 1},
+        allowedWidths: [4,8],
+        defaultWidth: 4
+    },
+    seed: {
+        label: "Seed Stitch",
+        optValue: "seed",
+        function: "seedStitch",
+        repeat: {width: 2, height: 2},
+        minimum: {width: 2, height: 2},
+        allowedWidths: [2,4,6,8],
+        defaultWidth: 6
+    }
+
+};
