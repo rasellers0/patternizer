@@ -4,6 +4,10 @@ function applyBorders(chart, settings) {
     const w = parseInt(settings.borderWidth);
     const rows = chart.length;
     const cols = chart[0].length;
+    
+    const borderTopTest = document.getElementById("borderTop")?.checked
+    const borderBtmTest = document.getElementById("borderBottom")?.checked
+
 
     const newRows = rows + (settings.borderTop ? w : 0) + (settings.borderBottom ? w : 0);
     const newCols = cols + (settings.borderLeft ? w : 0) + (settings.borderRight ? w : 0);

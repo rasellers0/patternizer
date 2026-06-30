@@ -18,8 +18,6 @@ function stockinetteStitch(col) {
     return (col % 2 === 0) ? "K" : "P";
 }
 
-
-
 function seedStitch(row, col) {
     return ((row + col) % 2 === 0) ? "K" : "P";
 }

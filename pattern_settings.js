@@ -23,11 +23,11 @@ function getBorderSettings() {
     const borderSettings = {
         borderEnabled: document.getElementById("borderEnable")?.checked ,
         borderWidth: parseInt(document.getElementById("borderWidth")?.value || "5"),
-        borderTop: document.getElementById("borderTop")?.checked ?? true,
-        borderBottom: document.getElementById("borderBottom")?.checked ?? true,
-        borderLeft: document.getElementById("borderLeft")?.checked ?? true,
-        borderRight: document.getElementById("borderRight")?.checked ?? true,
-        borderPattern: document.getElementById("borderPattern")?.value || "rib",
+        borderTop: document.getElementById("borderTop")?.checked,
+        borderBottom: document.getElementById("borderBottom")?.checked,
+        borderLeft: document.getElementById("borderLeft")?.checked,
+        borderRight: document.getElementById("borderRight")?.checked,
+        borderPattern: document.getElementById("borderPattern")?.value || "rib1x1",
         borderSelected: document.querySelectorAll('.border-sides'),
         borderControls: document.querySelectorAll('.border-settings')
     };

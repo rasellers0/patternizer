@@ -1,8 +1,6 @@
 const outputContainer = document.getElementById("outputContainer");
 outputContainer.classList.add("d-none");
 
-
-
 document.addEventListener("DOMContentLoaded", () => {
     populateBorderStitchOptions()
     const borderOptsEL = document.querySelector('#borderPattern');
@@ -217,7 +215,7 @@ function generatePattern() {
 
 function buildChartWithBorders(chart, bs){
     const selectedValues = Object.fromEntries(
-        Array.from(bs.borderSelected).map(cb => [cb.name || cb.id, cb.value === 'on' ? true : false])
+        Array.from(bs.borderSelected).map(cb => [cb.name || cb.id, cb.checked])
     );
     const borderSettings = Object.fromEntries(
         Array.from(bs.borderControls).map(select => [select.name || select.id, select.value])
@@ -314,21 +312,4 @@ function buildGlyphBitmap(ch, fontSpec, fontSize) {
     ctx.fillText(ch, 0, 0);
 
     return {canvas, width: glyphWidth, height: glyphHeight};
-}
-
-function formatRegion(region, compressed) {
-    switch (region) {
-        case "leftBorder":
-            return `Left Border: (${compressed})`;
-        case "rightBorder":
-            return `Right Border: (${compressed})`;
-        case "topBorder":
-            return `Top Border: (${compressed})`;
-        case "bottomBorder":
-            return `Bottom Border: (${compressed})`;
-        case "body":
-            return `Body(${compressed})`;
-        default:
-            return `${region}: (${compressed})`;
-    }
 }
