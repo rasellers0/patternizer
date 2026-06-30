@@ -1,17 +1,3 @@
-// function getInputSettings() {
-//     widthChoice = document.getElementById("widthPreset").value;
-//     heightChoice = document.getElementById("heightPreset").value;
-
-//     settingsObj = {
-//         text: document.getElementById("wordInput").value.trim().toUpperCase(),
-//         orientation: document.getElementById("orientation")?.value || "horizontal",
-//         invert: !!document.getElementById("invertToggle").checked,
-//         width: widthChoice || "medium",
-//         height: heightChoice || "medium"
-//     };
-//     return settingsObj;
-// }
-
 function getInputSettings() {
     return {
         text: document.getElementById("wordInput").value.trim().toUpperCase(),

@@ -11,7 +11,6 @@
  function determinePatternDimensions(maxX, minX, maxY, minY, inpChoice) {
     const glyph = getGlyphDimensions(maxX, minX, maxY, minY);
 
-    // const targetStitches = SIZE_PRESETS[inpChoice.size] ?? SIZE_PRESETS.AUTO;
     const targetStitches = getTargetStitches(inpChoice.size, inpChoice.orientation);
 
     const targetRows = Math.max(1, Math.round(targetStitches * glyph.glyphPxH / glyph.glyphPxW));
@@ -34,46 +33,6 @@
 
     return {targetRows, targetStitches};
 }
- 
- 
- 
-//  function determinePatternDimensions(maxX, minX, maxY, minY, inpChoice, warningEL) {
-//     const glyph = getGlyphDimensions(maxX, minX, maxY, minY);
-
-//     let targetStitches = inpChoice.width && PRESETS[inpChoice.width] ? PRESETS[inpChoice.width].width : null;
-//     let targetRows = inpChoice.height && PRESETS[inpChoice.height] ? PRESETS[inpChoice.height].height : null;
-//     const defaultStitches = 30;
-//     const defaultRows = Math.round((glyph.glyphPxH / glyph.glyphPxW) * defaultStitches) || 15;
-//     if (!targetStitches && !targetRows) {
-//         targetStitches = defaultStitches;
-//         targetRows = defaultRows;
-//     } else if (targetStitches && !targetRows) {
-//         const stitchSizePx = glyph.glyphPxW / targetStitches;
-//         targetRows = Math.max(1, Math.round(glyph.glyphPxH / stitchSizePx));
-//     } else if (!targetStitches && targetRows) {
-//         const rowSizePx = glyph.glyphPxH / targetRows;
-//         targetStitches = Math.max(1, Math.round(glyph.glyphPxW / rowSizePx));
-//     }
-
-//     const stitchSizeX = glyph.glyphPxW / targetStitches;
-//     const stitchSizeY = glyph.glyphPxH / targetRows;
- 
-//     const ratio = stitchSizeX / stitchSizeY;
-//     const percentStretch = Math.max(ratio, 1 / ratio) - 1;
-
-//     const DISTORTION_THRESHOLD = 0.20;
-//     if (warningEL) {
-//         if (percentStretch > DISTORTION_THRESHOLD) {
-//             const pct = Math.round(percentStretch * 100);
-//             warningEL.style.display = "block";
-//             warningEL.textContent = `The requested dimensions will distort letters by ~${pct}%.`;
-//         } else {
-//             warningEL.style.display = "none";
-//             warningEL.textContent = "";
-//         }
-//     }
-//     return {targetStitches, targetRows, stitchSizeX, stitchSizeY};
-// }
 
 function getGlyphDimensions(maxX, minX, maxY, minY) {
     let glyphPxW = maxX - minX + 1;
@@ -96,13 +55,6 @@ function getXYBounds(canvas, pixels){
     }
     return {minX, minY, maxX, maxY};
 }
-
-// function computeCanvasDimensions(textPxW, textPxH, paddingPx, transform) {
-//     if (!transform.swapDimensions) {
-//         return {width: textPxW + paddingPx * 2, height: textPxH + paddingPx * 2};
-//     }
-//     return {width: textPxH + paddingPx * 2, height: textPxW + paddingPx * 2};
-// }
 
 function computeCanvasDimensions(textPxW, textPxH, paddingPx, orientation, textLength) {
     if (orientation === ORIENTATION.HORIZONTAL) {

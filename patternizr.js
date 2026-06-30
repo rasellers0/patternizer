@@ -116,7 +116,7 @@ function buildChart(cells, invert) {
 function addBuffer(chart, buffer = 2) {
     if (!chart.length) return chart;
     const width = chart[0].length;
-    const makeBufferCell = () => ({stitch: "K", region: "buffer"});
+    const makeBufferCell = () => ({stitch: "K", region: "Buffer"});
     const makeBufferRow = () => Array(width + buffer * 2).fill(null).map(makeBufferCell);
     const paddedRows = chart.map(row => {
         const side = Array(buffer).fill(null).map(makeBufferCell);
@@ -281,16 +281,16 @@ function buildGlyphBitmap(ch, fontSpec, fontSize) {
 function formatRegion(region, compressed) {
     switch (region) {
         case "leftBorder":
-            return `Left Border(${compressed})`;
+            return `Left Border: (${compressed})`;
         case "rightBorder":
-            return `Right Border(${compressed})`;
+            return `Right Border: (${compressed})`;
         case "topBorder":
-            return `Top Border(${compressed})`;
+            return `Top Border: (${compressed})`;
         case "bottomBorder":
-            return `Bottom Border(${compressed})`;
+            return `Bottom Border: (${compressed})`;
         case "body":
             return `Body(${compressed})`;
         default:
-            return `${region}(${compressed})`;
+            return `${region}: (${compressed})`;
     }
 }

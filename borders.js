@@ -59,6 +59,21 @@ function fillRegion(result, settings, region) {
 
 function generateBorderStitch(region, r, c, settings) {
     const pattern = settings.borderPattern;
-    if (pattern === "rib") { return ribStitch(region, r, c);}
+    switch(pattern){
+        case 'rib1x1':
+            return rib1x1Stitch(r);
+        case 'rib2x2':
+            return rib2x2Stitch(r);
+        case 'garter':
+            return garterStitch()
+        case 'stockinette':
+            return stockinetteStitch(c)
+        case 'seed':
+            return seedStitch(r, c)
+        default:
+            return garterStitch()
+    }
+
+    if (pattern === "rib") { return rib1x1Stitch(r);}
     return "K";
 }
